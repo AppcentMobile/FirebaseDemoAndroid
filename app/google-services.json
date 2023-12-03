@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "752129127320",
+    "project_id": "appcent-firebase-demo",
+    "storage_bucket": "appcent-firebase-demo.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:752129127320:android:39c20e9919f4924def71ed",
+        "android_client_info": {
+          "package_name": "com.appcent.android.firebasedemo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDXFz2Qsdmh1GTE2qB52nnLuTZ-dTODDl4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
