@@ -1,5 +1,6 @@
 package com.appcent.android.firebasedemo.domain.repository
 
+import android.content.res.Resources.NotFoundException
 import com.appcent.android.firebasedemo.domain.data.ApiResult
 import com.appcent.android.firebasedemo.domain.util.extensions.await
 import com.google.firebase.auth.FirebaseAuth
@@ -25,7 +26,7 @@ class AuthRepositoryImpl @Inject constructor(
             if (user != null) {
                 ApiResult.Success(user)
             } else {
-                ApiResult.Error(Exception("Kullanıcı oturumu açılamadı."))
+                ApiResult.Error(NotFoundException())
             }
         } catch (e: Exception) {
             ApiResult.Error(e)
@@ -46,7 +47,7 @@ class AuthRepositoryImpl @Inject constructor(
             if (user != null) {
                 ApiResult.Success(user)
             } else {
-                ApiResult.Error(Exception("Failed to log in to user."))
+                ApiResult.Error(NotFoundException())
             }
         } catch (e: Exception) {
             ApiResult.Error(e)
