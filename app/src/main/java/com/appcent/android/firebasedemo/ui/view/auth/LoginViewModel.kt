@@ -6,8 +6,8 @@ import com.appcent.android.firebasedemo.domain.repository.AuthRepository
 import com.appcent.android.firebasedemo.ui.view.auth.state.LoginViewState
 import com.mkhakpaki.sinatobechanged.ui.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,25 +20,24 @@ class LoginViewModel @Inject constructor(
     private val authRepository: AuthRepository
 ) : BaseViewModel() {
 
-    private val _loginViewState =
-        MutableStateFlow<LoginViewState>(LoginViewState.Loading)
-    val loginViewState = _loginViewState.asStateFlow()
-
+    private val _loginViewState = MutableSharedFlow<LoginViewState>()
+    val loginViewState = _loginViewState.asSharedFlow()
 
     init {
-        login()
-    }
-
-    fun checkCurrentUser() {
         viewModelScope.launch {
-            authRepository.currentUser
+            if (authRepository.currentUser != null) {
+                _loginViewState.emit(LoginViewState.Success)
+            }
         }
     }
 
-    private fun login() {
+    fun logout() {
+        authRepository.logout()
+    }
+
+    fun login(email: String, password: String) {
         viewModelScope.launch {
-            val result = authRepository.signUp("hasanTest", "test1@gmail.com", "123456")
-            val state = when (result) {
+            val state = when (val result = authRepository.login(email, password)) {
                 is ApiResult.Error -> {
                     LoginViewState.Error(result.error.message.orEmpty())
                 }
@@ -48,8 +47,7 @@ class LoginViewModel @Inject constructor(
                 }
 
                 is ApiResult.Success -> {
-                    LoginViewState.Success(result.data)
-
+                    LoginViewState.Success
                 }
             }
             _loginViewState.emit(state)
