@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -25,5 +24,18 @@
         tools:listitem="@layout/item_user"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         android:layout_marginTop="8dp"/>
+
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/empty_state"
+        android:text="@string/user_not_found"
+        android:textAppearance="?textAppearanceHeadline3"
+        app:drawableTopCompat="@drawable/ic_users_empty"
+        android:textColor="?colorPrimary"
+        app:drawableTint="?colorPrimary"
+        android:visibility="gone"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
 </LinearLayout>

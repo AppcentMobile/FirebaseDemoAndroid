@@ -9,6 +9,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -37,6 +38,7 @@ class AuthenticationViewModel @Inject constructor(
 
     fun login(email: String, password: String) {
         viewModelScope.launch {
+            _authenticationViewState.emit(AuthenticationViewState.Loading)
             val state = when (val result = authRepository.login(email, password)) {
 
                 is ApiResult.Loading -> {
@@ -57,6 +59,7 @@ class AuthenticationViewModel @Inject constructor(
 
     fun singIn(name: String, email: String, password: String) {
         viewModelScope.launch {
+            _authenticationViewState.emit(AuthenticationViewState.Loading)
             val state = when (val result = authRepository.signUp(name, email, password)) {
 
                 ApiResult.Loading -> {
