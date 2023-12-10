@@ -129,9 +129,9 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment() {
 
     }
 
-    open fun showProgress(isCancelable: Boolean = false) {
+    open fun showProgress() {
         isProgressShowing = true
-        mainActivity?.showProgress(isCancelable)
+        mainActivity?.showProgress()
     }
 
     open fun hideProgress() {
