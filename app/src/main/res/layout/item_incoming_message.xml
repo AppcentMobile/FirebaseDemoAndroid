@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginVertical="4dp">
+
+    <TextView
+        android:id="@+id/tv_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_incoming_message"
+        android:maxWidth="240dp"
+        android:paddingHorizontal="24dp"
+        android:paddingVertical="12dp"
+        android:gravity="start"
+        android:textColor="?colorOnSecondary"
+        android:layout_alignParentStart="true"
+        tools:text="This is an incoming message." />
+</RelativeLayout>

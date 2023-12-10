@@ -2,6 +2,7 @@ package com.appcent.android.firebasedemo.ui.view
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.core.view.isVisible
 import com.appcent.android.firebasedemo.R
 import com.appcent.android.firebasedemo.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -18,11 +19,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun hideProgress() {
-
-
+        binding.progressLayout.isVisible = false
     }
 
-    fun showProgress(cancelable: Boolean) {
-
+    fun showProgress() {
+        binding.progressLayout.isVisible = true
     }
 }
