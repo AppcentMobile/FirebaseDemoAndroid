@@ -9,5 +9,16 @@
         android:id="@+id/Login"
         android:name="com.appcent.android.firebasedemo.ui.view.auth.LoginFragment"
         android:label="@string/login"
-        tools:layout="@layout/fragment_login" />
+        tools:layout="@layout/fragment_login">
+        <action
+            android:id="@+id/action_Login_to_registerFragment"
+            app:destination="@id/registerFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/registerFragment"
+        android:name="com.appcent.android.firebasedemo.ui.view.auth.RegisterFragment"
+        android:label="@string/sign_up"
+        tools:layout="@layout/fragment_register" />
+
 </navigation>

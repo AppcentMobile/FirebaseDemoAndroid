@@ -14,7 +14,7 @@ suspend fun <T> Task<T>.await(): T {
     return suspendCancellableCoroutine { cont ->
         addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                cont.resume(task.result!!,null)
+                cont.resume(task.result,null)
             } else {
                 cont.resumeWithException(task.exception ?: RuntimeException("Fail"))
             }
