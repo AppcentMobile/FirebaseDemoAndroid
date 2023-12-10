@@ -1,5 +1,6 @@
 package com.appcent.android.firebasedemo.domain.util.extensions
 
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -17,4 +18,8 @@ fun <T> Fragment.collectFlow(flow: Flow<T>, observer: (T) -> Unit) {
             flow.collect { t -> observer(t) }
         }
     }
+}
+
+fun Fragment.showToast(message: String) {
+    Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
 }

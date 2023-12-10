@@ -1,9 +1,10 @@
 package com.appcent.android.firebasedemo.ui.view.auth
 
-import android.widget.Toast
-import androidx.fragment.app.viewModels
+import androidx.navigation.navGraphViewModels
+import com.appcent.android.firebasedemo.R
 import com.appcent.android.firebasedemo.databinding.FragmentLoginBinding
 import com.appcent.android.firebasedemo.domain.util.extensions.collectFlow
+import com.appcent.android.firebasedemo.domain.util.extensions.showToast
 import com.appcent.android.firebasedemo.ui.base.BaseFragment
 import com.appcent.android.firebasedemo.ui.view.auth.state.LoginViewState
 import dagger.hilt.android.AndroidEntryPoint
@@ -14,28 +15,35 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
 
     override fun getViewBinding() = FragmentLoginBinding.inflate(layoutInflater)
 
-    private val viewModel: LoginViewModel by viewModels()
+    private val viewModel: LoginViewModel by navGraphViewModels(R.id.nav_authentication) {
+        defaultViewModelProviderFactory
+    }
 
-    override fun initUi() {
-        super.initUi()
-
-        collectFlow(viewModel.loginViewState) {
-            handleViewState(it)
+    override fun setClickListeners() {
+        super.setClickListeners()
+        binding.btnLogin.setOnClickListener {
+            val email = binding.etEmail.text.toString().trim()
+            val password = binding.etPassword.text.toString().trim()
+            viewModel.login(email, password)
         }
+    }
+
+    override fun setObservers() {
+        super.setObservers()
+        collectFlow(viewModel.loginViewState) { handleViewState(it) }
     }
 
     private fun handleViewState(viewState: LoginViewState) {
         when (viewState) {
             is LoginViewState.Error -> {
-                Toast.makeText(requireContext(), viewState.errorMessage, Toast.LENGTH_LONG).show()
+                showToast(viewState.errorMessage)
             }
 
             LoginViewState.Loading -> {
-
             }
 
             is LoginViewState.Success -> {
-                viewState.data
+                //TODO Chat Ekranına Yönlendirelecek
             }
         }
     }
