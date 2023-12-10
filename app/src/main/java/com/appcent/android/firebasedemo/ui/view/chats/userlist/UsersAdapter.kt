@@ -6,8 +6,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.appcent.android.firebasedemo.data.model.User
 import com.appcent.android.firebasedemo.databinding.ItemUserBinding
 
-class UsersAdapter(private val users: List<User>) :
+class UsersAdapter() :
     RecyclerView.Adapter<UsersAdapter.UserViewHolder>() {
+
+    private val users: MutableList<User> = mutableListOf()
+
+    fun updateDate(data:List<User>) {
+        users.clear()
+        users.addAll(data)
+        notifyDataSetChanged()
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UsersAdapter.UserViewHolder {
 
         val inflater = LayoutInflater.from(parent.context)
