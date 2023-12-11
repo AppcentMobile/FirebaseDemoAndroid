@@ -37,7 +37,7 @@ class UsersAdapter() :
 
             fun bind(user:User) {
                 with(binding) {
-                    textViewUserName.text = user.userName
+                    textViewUserName.text = "${user.name}(${user.email})"
                 }
             }
 
