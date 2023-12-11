@@ -13,8 +13,24 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:listitem="@layout/item_incoming_message" />
 
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/empty_state"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/no_message_yet"
+        android:textAppearance="?textAppearanceHeadline3"
+        android:textColor="?colorPrimary"
+        android:visibility="gone"
+        app:drawableTint="?colorPrimary"
+        app:drawableTopCompat="@drawable/ic_conversation_empty"
+        app:layout_constraintBottom_toTopOf="@id/input"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/input"
@@ -23,8 +39,8 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="8dp"
         android:hint="@string/message"
-        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
         android:maxLines="5"
+        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
         android:textColor="?colorOnBackground"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/btn_send"
@@ -34,13 +50,13 @@
         android:id="@+id/btn_send"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="?colorPrimary"
         android:minWidth="48dp"
         android:minHeight="48dp"
-        android:background="?colorPrimary"
-        app:tint="?colorOnPrimary"
         android:scaleType="centerInside"
-        app:srcCompat="@drawable/ic_send"
         app:layout_constraintBottom_toBottomOf="@id/input"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/input" />
+        app:layout_constraintTop_toTopOf="@id/input"
+        app:srcCompat="@drawable/ic_send"
+        app:tint="?colorOnPrimary" />
 </androidx.constraintlayout.widget.ConstraintLayout>

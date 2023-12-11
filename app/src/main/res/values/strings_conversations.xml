@@ -5,4 +5,5 @@
     <string name="searchUsers">Search Users</string>
     <string name="user_not_found">Users not found</string>
     <string name="message">Message</string>
+    <string name="no_message_yet">No message yet</string>
 </resources>

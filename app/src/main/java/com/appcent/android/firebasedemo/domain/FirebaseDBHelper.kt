@@ -1,6 +1,9 @@
 package com.appcent.android.firebasedemo.domain
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.appcent.android.firebasedemo.data.model.Conversation
+import com.appcent.android.firebasedemo.data.model.Message
 import com.appcent.android.firebasedemo.data.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -39,9 +42,52 @@ class FirebaseDBHelper(
     }
 
 
-    fun getConversationMessages(conversationId: String, valueEventListener: ValueEventListener) {
-        readData("chats/$conversationId/messages", valueEventListener)
+    suspend fun getConversation(conversationId: String): Conversation? =
+        suspendCoroutine { continuation ->
+            readData("conversations/$conversationId", object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val conversation = snapshot.getValue(Conversation::class.java)
+                    continuation.resume(conversation)
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                    continuation.resumeWithException(databaseError.toException())
+                }
+            })
+        }
+
+    fun observeConversationChanges(conversationId: String): LiveData<List<Message>> {
+        val liveData = MutableLiveData<List<Message>>()
+
+        val valueEventListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+              snapshot.getValue(Conversation::class.java)?.messages?.values?.toList()?.let {messageList->
+                  liveData.postValue( messageList.sortedBy { it.timestamp })
+              }
+
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Handle error if needed
+            }
+        }
+
+        // Attach the ValueEventListener to the database reference
+        val conversationRef = databaseReference.child("conversations").child(conversationId)
+        conversationRef.addValueEventListener(valueEventListener)
+
+        // Add a cleanup mechanism when the LiveData is cleared
+        liveData.observeForever {
+            // Remove the ValueEventListener when there are no observers
+            if (!liveData.hasObservers()) {
+                conversationRef.removeEventListener(valueEventListener)
+            }
+        }
+
+        return liveData
     }
+
+
 
     suspend fun getUsersListForMessaging(query: String? = null): List<User> =
         suspendCoroutine { continuation ->
@@ -138,15 +184,27 @@ class FirebaseDBHelper(
             }
         }
 
-        val conversation = Conversation(mutableListOf(), conversationId, listOf())
+        val conversation = Conversation(null, listOf(user1Id, user2Id))
         writeData(
-            "conversations", conversation
+            "conversations/$conversationId", conversation
         ) { error, _ ->
             error?.let {
                 continuation.resumeWithException(it.toException())
             }
         }
         continuation.resume(conversationId)
+    }
+
+    fun addMessageToConversation(conversationId: String, message: Message) {
+        val messagesRef =
+            databaseReference.child("conversations").child(conversationId).child("messages")
+
+        // Generate a unique key for the new message
+        val messageId = messagesRef.push().key ?: ""
+
+        // Set the message data under the generated key
+        messagesRef.child(messageId).setValue(message)
+
     }
 
 
