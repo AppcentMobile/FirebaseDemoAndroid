@@ -41,7 +41,9 @@ class ChatFragment : BaseFragment<FragmentChatBinding>() {
         viewModel.observeConversation().observe(viewLifecycleOwner) {
             activity?.runOnUiThread {
                 chatAdapter.submitList(it)
-                binding.rvChats.smoothScrollToPosition(chatAdapter.itemCount)
+                if (chatAdapter.itemCount > 0) {
+                    binding.rvChats.smoothScrollToPosition(chatAdapter.itemCount)
+                }
             }
         }
     }
@@ -80,7 +82,9 @@ class ChatFragment : BaseFragment<FragmentChatBinding>() {
             }
             input.setOnFocusChangeListener { _, hasFocus ->
                 if (hasFocus) {
-                    rvChats.smoothScrollToPosition(chatAdapter.itemCount - 1)
+                    if (chatAdapter.itemCount > 0) {
+                        rvChats.smoothScrollToPosition(chatAdapter.itemCount - 1)
+                    }
                 }
             }
         }
