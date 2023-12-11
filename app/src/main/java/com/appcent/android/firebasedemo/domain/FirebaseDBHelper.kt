@@ -14,7 +14,6 @@ import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import timber.log.Timber
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -76,7 +75,6 @@ class FirebaseDBHelper(
 
                 // Sort conversations by timestamp (assuming ConversationBrief has a timestamp property)
                 conversations.sortByDescending { it.lastMessageTimestamp }
-                Timber.i("conversations size helper ${conversations.size}")
                 conversationsFlow.value = conversations
             }
 
@@ -181,15 +179,15 @@ class FirebaseDBHelper(
         writeData("users/$userId", userData, completionListener = object : ValueEventListener,
             DatabaseReference.CompletionListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                Timber.i("data changed ${snapshot.children}")
+
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Timber.i("onCancelled ${error.message}")
+
             }
 
             override fun onComplete(error: DatabaseError?, ref: DatabaseReference) {
-                Timber.i("onComplete ${error?.message}")
+
             }
 
         })
