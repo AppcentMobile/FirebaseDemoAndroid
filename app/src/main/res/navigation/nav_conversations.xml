@@ -11,8 +11,8 @@
         android:label="@string/conversations"
         tools:layout="@layout/fragment_conversations" >
 
-        <action android:id="@+id/conversations_to_user_list" app:destination="@id/UserList"/>
-        <action android:id="@+id/conversations_to_chat" app:destination="@id/ChatDetail"/>
+        <action android:id="@+id/action_conversations_to_user_list" app:destination="@id/UserList"/>
+        <action android:id="@+id/action_conversations_to_chat" app:destination="@id/ChatDetail"/>
     </fragment>
 
     <fragment
@@ -21,7 +21,7 @@
         android:label="@string/searchUsers"
         tools:layout="@layout/fragment_user_list" >
 
-        <action android:id="@+id/UserList_to_chat_detail" app:destination="@id/ChatDetail"/>
+        <action android:id="@+id/action_user_list_to_chat_detail" app:destination="@id/ChatDetail"/>
 
     </fragment>
 

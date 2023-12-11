@@ -14,7 +14,7 @@ class ConversationsFragment:BaseFragment<FragmentConversationsBinding>() {
     override fun setClickListeners() {
         with(binding) {
             fabNewChat.setOnClickListener {
-                nav(ConversationsFragmentDirections.conversationsToUserList())
+                nav(ConversationsFragmentDirections.actionConversationsToUserList())
             }
         }
     }
