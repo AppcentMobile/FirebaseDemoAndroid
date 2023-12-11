@@ -30,4 +30,19 @@
         android:src="@drawable/ic_chat"
         app:tint="?colorOnPrimary" />
 
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/empty_state"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/no_conversation_yet"
+        android:textAppearance="?textAppearanceHeadline4"
+        android:textColor="?colorPrimary"
+        android:visibility="gone"
+        app:drawableTint="?colorPrimary"
+        app:drawableTopCompat="@drawable/ic_conversation_empty"
+        android:layout_centerInParent="true"/>
+
+
 </RelativeLayout>

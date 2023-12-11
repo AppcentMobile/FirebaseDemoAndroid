@@ -3,6 +3,7 @@ package com.appcent.android.firebasedemo.domain
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.appcent.android.firebasedemo.data.model.Conversation
+import com.appcent.android.firebasedemo.data.model.ConversationBrief
 import com.appcent.android.firebasedemo.data.model.Message
 import com.appcent.android.firebasedemo.data.model.User
 import com.google.firebase.auth.FirebaseAuth
@@ -10,6 +11,9 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import timber.log.Timber
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
@@ -37,8 +41,54 @@ class FirebaseDBHelper(
         databaseReference.child(path).addListenerForSingleValueEvent(valueEventListener)
     }
 
-    fun getUserConversations(valueEventListener: ValueEventListener) {
-        readData("users/$currentUserId/chats", valueEventListener)
+    fun getUserConversations(): Flow<List<ConversationBrief>?> {
+        val conversationsFlow = MutableStateFlow<List<ConversationBrief>?>(null)
+
+        val valueEventListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val conversations = mutableListOf<ConversationBrief>()
+
+                // Iterate through user's chats
+                snapshot.child("users").child(currentUserId)
+                    .child("chats").children.forEach { chatSnapshot ->
+                        var userName = ""
+                        val chatId = chatSnapshot.value.toString()
+
+                        // Get conversation details
+                        val conversationSnapshot = snapshot.child("conversations").child(chatId)
+                        val lastMessage = getLastMessage(conversationSnapshot)
+                        val participants =
+                            conversationSnapshot.child("participants").children.map { it.value.toString() }
+                        val otherParticipantId = participants.find { it != currentUserId }
+                        otherParticipantId?.let {
+                            val user = snapshot.child("users").child(it)
+                            userName = "${user.child("name").value}(${user.child("email").value})"
+                        }
+                        // Create ConversationBrief and add to the list
+                        val conversationBrief = ConversationBrief(
+                            id = chatId,
+                            lastMessage = lastMessage?.text ?: "",
+                            lastMessageTimestamp = lastMessage?.timestamp ?: 0,
+                            userName = userName
+                        )
+                        conversations.add(conversationBrief)
+                    }
+
+                // Sort conversations by timestamp (assuming ConversationBrief has a timestamp property)
+                conversations.sortByDescending { it.lastMessageTimestamp }
+                Timber.i("conversations size helper ${conversations.size}")
+                conversationsFlow.value = conversations
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Handle error if needed
+            }
+        }
+
+        // Attach the ValueEventListener to the database reference
+        databaseReference.addValueEventListener(valueEventListener)
+
+        return conversationsFlow.asStateFlow()
     }
 
 
@@ -61,9 +111,10 @@ class FirebaseDBHelper(
 
         val valueEventListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-              snapshot.getValue(Conversation::class.java)?.messages?.values?.toList()?.let {messageList->
-                  liveData.postValue( messageList.sortedBy { it.timestamp })
-              }
+                snapshot.getValue(Conversation::class.java)?.messages?.values?.toList()
+                    ?.let { messageList ->
+                        liveData.postValue(messageList.sortedBy { it.timestamp })
+                    }
 
             }
 
@@ -86,7 +137,6 @@ class FirebaseDBHelper(
 
         return liveData
     }
-
 
 
     suspend fun getUsersListForMessaging(query: String? = null): List<User> =
@@ -208,4 +258,12 @@ class FirebaseDBHelper(
     }
 
 
+    private fun getLastMessage(conversationSnapshot: DataSnapshot): Message? {
+        val messagesSnapshot = conversationSnapshot.child("messages")
+        val latestMessageSnapshot = messagesSnapshot.children.maxByOrNull {
+            it.child("timestamp").getValue(Long::class.java) ?: 0
+        }
+
+        return latestMessageSnapshot?.getValue(Message::class.java)
+    }
 }
