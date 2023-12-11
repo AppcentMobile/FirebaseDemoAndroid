@@ -57,7 +57,7 @@ class FirebaseDBHelper(
                         // Exclude the current user from the list
                         if (userId != currentUserId) {
                             query?.let {
-                                if (email.contains(it)) {
+                                if (name.contains(it) || email.contains(it)) {
                                     usersList.add(User(userId, name, email))
                                 }
                             } ?: kotlin.run {
@@ -96,11 +96,4 @@ class FirebaseDBHelper(
         })
     }
 
-    // Add other database operations as needed
-
-    // Example usage:
-    // FirebaseDBHelper.getInstance().getUserConversations(conversationsValueEventListener)
-    // FirebaseDBHelper.getInstance().getConversationMessages("chat_id", messagesValueEventListener)
-    // FirebaseDBHelper.getInstance().getUsersListForMessaging(usersListValueEventListener)
-    // FirebaseDBHelper.getInstance().addUserToUserNode("other_user_id", otherUserData)
 }

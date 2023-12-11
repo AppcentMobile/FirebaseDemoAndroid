@@ -9,6 +9,7 @@ import com.appcent.android.firebasedemo.domain.util.extensions.collectFlow
 import com.appcent.android.firebasedemo.ui.base.BaseFragment
 import com.appcent.android.firebasedemo.ui.view.chats.userlist.state.UserListViewState
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 
 @AndroidEntryPoint
 class UserListFragment:BaseFragment<FragmentUserListBinding>(), SearchView.OnQueryTextListener {
@@ -22,6 +23,10 @@ class UserListFragment:BaseFragment<FragmentUserListBinding>(), SearchView.OnQue
 
     override fun initUi() {
         binding.rvUsers.adapter = usersAdapter
+    }
+
+    override fun delayedInitUi() {
+        viewModel.getUsers()
     }
 
     override fun setObservers() {

@@ -49,7 +49,7 @@ class AuthRepositoryImpl @Inject constructor(
             val user = authResult.user
 
             if (user != null) {
-                val userModel = User(userId = user.uid, email = email, userName =  name)
+                val userModel = User(userId = user.uid, email = email, name =  name)
                 firebaseDBHelper.addUserToUserNode(user.uid, userModel)
                 ApiResult.Success(user)
             } else {
