@@ -6,12 +6,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.appcent.android.firebasedemo.data.model.User
 import com.appcent.android.firebasedemo.databinding.ItemUserBinding
 
-class UsersAdapter() :
+class UsersAdapter(val onUserSelect: (String) -> Unit) :
     RecyclerView.Adapter<UsersAdapter.UserViewHolder>() {
 
     private val users: MutableList<User> = mutableListOf()
 
-    fun updateDate(data:List<User>) {
+    fun updateDate(data: List<User>) {
         users.clear()
         users.addAll(data)
         notifyDataSetChanged()
@@ -35,11 +35,14 @@ class UsersAdapter() :
     inner class UserViewHolder(private val binding: ItemUserBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-            fun bind(user:User) {
-                with(binding) {
-                    textViewUserName.text = "${user.name}(${user.email})"
+        fun bind(user: User) {
+            with(binding) {
+                itemView.setOnClickListener {
+                    onUserSelect.invoke(user.userId)
                 }
+                textViewUserName.text = "${user.name}(${user.email})"
             }
+        }
 
     }
 

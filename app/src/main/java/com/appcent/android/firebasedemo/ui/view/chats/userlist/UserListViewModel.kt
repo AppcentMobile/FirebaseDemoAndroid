@@ -2,7 +2,6 @@ package com.appcent.android.firebasedemo.ui.view.chats.userlist
 
 import androidx.lifecycle.viewModelScope
 import com.appcent.android.firebasedemo.domain.FirebaseDBHelper
-import com.appcent.android.firebasedemo.ui.view.auth.state.AuthenticationViewState
 import com.appcent.android.firebasedemo.ui.view.chats.userlist.state.UserListViewState
 import com.mkhakpaki.sinatobechanged.ui.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -10,7 +9,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -42,6 +40,17 @@ class UserListViewModel @Inject constructor(
             }
 
         }
+    }
+
+    fun getConversationId(userId: String): String {
+        viewModelScope.launch {
+            _userListViewState.emit(UserListViewState.Loading)
+            val conversationId = firebaseDBHelper.getConversationId(userId)
+            _userListViewState.emit(UserListViewState.OpenConversation(conversationId))
+        }
+
+
+        return ""
     }
 
 

@@ -7,4 +7,5 @@ sealed interface UserListViewState {
     data object Empty : UserListViewState
     data class Success(val userList: List<User>) : UserListViewState
     data class Error(val errorMessage: String) : UserListViewState
+    data class OpenConversation(val conversationId:String) : UserListViewState
 }

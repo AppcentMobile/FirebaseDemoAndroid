@@ -9,7 +9,6 @@ import com.appcent.android.firebasedemo.domain.util.extensions.collectFlow
 import com.appcent.android.firebasedemo.ui.base.BaseFragment
 import com.appcent.android.firebasedemo.ui.view.chats.userlist.state.UserListViewState
 import dagger.hilt.android.AndroidEntryPoint
-import timber.log.Timber
 
 @AndroidEntryPoint
 class UserListFragment:BaseFragment<FragmentUserListBinding>(), SearchView.OnQueryTextListener {
@@ -17,7 +16,14 @@ class UserListFragment:BaseFragment<FragmentUserListBinding>(), SearchView.OnQue
     private val viewModel: UserListViewModel by viewModels()
 
 
-    private val usersAdapter = UsersAdapter()
+    private val usersAdapter = UsersAdapter() {userId->
+        viewModel.getConversationId(userId)
+    }
+
+    private fun navToChat(conversationId: String) {
+        nav(UserListFragmentDirections.actionUserListToChatDetail(conversationId))
+    }
+
     override fun getViewBinding() =
         FragmentUserListBinding.inflate(layoutInflater)
 
@@ -42,6 +48,7 @@ class UserListFragment:BaseFragment<FragmentUserListBinding>(), SearchView.OnQue
             is UserListViewState.Error -> showErrorDialog(userListViewState.errorMessage)
             UserListViewState.Loading -> showProgress()
             is UserListViewState.Success -> showUsers(userListViewState.userList)
+            is UserListViewState.OpenConversation -> navToChat(userListViewState.conversationId)
         }
     }
 

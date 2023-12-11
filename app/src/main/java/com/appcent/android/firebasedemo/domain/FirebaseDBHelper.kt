@@ -1,12 +1,14 @@
 package com.appcent.android.firebasedemo.domain
 
+import com.appcent.android.firebasedemo.data.model.Conversation
 import com.appcent.android.firebasedemo.data.model.User
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
-
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
 import timber.log.Timber
+import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -35,6 +37,7 @@ class FirebaseDBHelper(
     fun getUserConversations(valueEventListener: ValueEventListener) {
         readData("users/$currentUserId/chats", valueEventListener)
     }
+
 
     fun getConversationMessages(conversationId: String, valueEventListener: ValueEventListener) {
         readData("chats/$conversationId/messages", valueEventListener)
@@ -78,8 +81,8 @@ class FirebaseDBHelper(
 
 
     fun addUserToUserNode(userId: String, userData: User) {
-        // Assuming you have a node for each user storing user details
-        writeData("users/$userId", userData, completionListener = object:ValueEventListener,
+
+        writeData("users/$userId", userData, completionListener = object : ValueEventListener,
             DatabaseReference.CompletionListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 Timber.i("data changed ${snapshot.children}")
@@ -95,5 +98,56 @@ class FirebaseDBHelper(
 
         })
     }
+
+    suspend fun getConversationId(userId: String): String =
+        suspendCoroutine { continuation ->
+            readData("users/$currentUserId/chats/$userId", object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    if (dataSnapshot.value == null) {
+                        createConversation(currentUserId, userId, continuation)
+                    } else {
+                        continuation.resume(dataSnapshot.value.toString())
+                    }
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                    continuation.resumeWithException(databaseError.toException())
+                }
+            })
+        }
+
+
+    fun createConversation(
+        user1Id: String,
+        user2Id: String,
+        continuation: Continuation<String>
+    ) {
+        val conversationId = databaseReference.push().key.toString()
+        writeData(
+            "users/$user1Id/chats/$user2Id", conversationId
+        ) { error, _ ->
+            error?.let {
+                continuation.resumeWithException(it.toException())
+            }
+        }
+        writeData(
+            "users/$user2Id/chats/$user1Id", conversationId
+        ) { error, _ ->
+            error?.let {
+                continuation.resumeWithException(it.toException())
+            }
+        }
+
+        val conversation = Conversation(mutableListOf(), conversationId, listOf())
+        writeData(
+            "conversations", conversation
+        ) { error, _ ->
+            error?.let {
+                continuation.resumeWithException(it.toException())
+            }
+        }
+        continuation.resume(conversationId)
+    }
+
 
 }
