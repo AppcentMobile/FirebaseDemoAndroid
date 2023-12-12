@@ -47,11 +47,6 @@ class ChatAdapter(private val currentUserId:String) : ListAdapter<Message, Recyc
         }
     }
 
-    override fun submitList(list: List<Message>?) {
-        Timber.i("submit list $list")
-        super.submitList(list)
-
-    }
     override fun getItemViewType(position: Int): Int {
         val message = getItem(position)
 
