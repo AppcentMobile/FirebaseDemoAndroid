@@ -1,6 +1,8 @@
 package com.appcent.android.firebasedemo.domain.repository
 
 import android.content.res.Resources.NotFoundException
+import com.appcent.android.firebasedemo.data.model.User
+import com.appcent.android.firebasedemo.domain.FirebaseDBHelper
 import com.appcent.android.firebasedemo.domain.data.ApiResult
 import com.appcent.android.firebasedemo.domain.util.extensions.await
 import com.google.firebase.auth.FirebaseAuth
@@ -13,7 +15,8 @@ import javax.inject.Inject
  */
 
 class AuthRepositoryImpl @Inject constructor(
-    private val firebaseAuth: FirebaseAuth
+    private val firebaseAuth: FirebaseAuth,
+    private val firebaseDBHelper: FirebaseDBHelper
 ) : AuthRepository {
 
     override val currentUser: FirebaseUser?
@@ -44,7 +47,10 @@ class AuthRepositoryImpl @Inject constructor(
                 UserProfileChangeRequest.Builder().setDisplayName(name).build()
             )?.await()
             val user = authResult.user
+
             if (user != null) {
+                val userModel = User(userId = user.uid, email = email, name =  name)
+                firebaseDBHelper.addUserToUserNode(user.uid, userModel)
                 ApiResult.Success(user)
             } else {
                 ApiResult.Error(NotFoundException())

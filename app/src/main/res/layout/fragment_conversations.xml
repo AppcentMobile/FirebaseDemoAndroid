@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- RecyclerView -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_chats"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:clipToPadding="false"
+        android:padding="8dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:itemCount="10"
+        tools:listitem="@layout/item_conversation" />
+
+    <!-- FloatingActionButton (FAB) -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_new_chat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="16dp"
+        android:backgroundTint="?colorPrimary"
+        android:contentDescription="@string/new_conversation"
+        android:src="@drawable/ic_chat"
+        app:tint="?colorOnPrimary" />
+
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/empty_state"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/no_conversation_yet"
+        android:textAppearance="?textAppearanceHeadline4"
+        android:textColor="?colorPrimary"
+        android:visibility="gone"
+        app:drawableTint="?colorPrimary"
+        app:drawableTopCompat="@drawable/ic_conversation_empty"
+        android:layout_centerInParent="true"/>
+
+
+</RelativeLayout>

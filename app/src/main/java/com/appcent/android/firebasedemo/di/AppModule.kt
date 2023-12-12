@@ -1,6 +1,9 @@
 package com.appcent.android.firebasedemo.di
 
+import com.appcent.android.firebasedemo.domain.FirebaseDBHelper
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -13,9 +16,19 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-class AppModule {
+object AppModule {
 
     @Singleton
     @Provides
     fun provideFirebaseAuth(): FirebaseAuth = FirebaseAuth.getInstance()
+
+    @Provides
+    @Singleton
+    fun provideDBHelper(databaseReference: DatabaseReference, firebaseAuth: FirebaseAuth) =
+        FirebaseDBHelper(databaseReference, firebaseAuth)
+
+    @Provides
+    @Singleton
+    fun provideDataBaseReference(): DatabaseReference = FirebaseDatabase.getInstance().reference
+
 }

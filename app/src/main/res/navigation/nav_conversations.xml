@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_conversations"
+    app:startDestination="@id/Conversations">
+
+    <fragment
+        android:id="@+id/Conversations"
+        android:name="com.appcent.android.firebasedemo.ui.view.chats.list.ConversationsFragment"
+        android:label="@string/conversations"
+        tools:layout="@layout/fragment_conversations" >
+
+        <action android:id="@+id/action_conversations_to_user_list" app:destination="@id/UserList"/>
+        <action android:id="@+id/action_conversations_to_chat" app:destination="@id/ChatDetail"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/UserList"
+        android:name="com.appcent.android.firebasedemo.ui.view.chats.userlist.UserListFragment"
+        android:label="@string/searchUsers"
+        tools:layout="@layout/fragment_user_list" >
+
+        <action android:id="@+id/action_user_list_to_chat_detail" app:destination="@id/ChatDetail"/>
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/ChatDetail"
+        android:name="com.appcent.android.firebasedemo.ui.view.chats.detail.ChatFragment"
+        tools:layout="@layout/fragment_chat" >
+        <argument android:name="conversation_id"
+            app:argType="string"
+            />
+
+    </fragment>
+</navigation>

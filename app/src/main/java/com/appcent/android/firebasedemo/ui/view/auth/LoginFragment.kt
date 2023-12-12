@@ -8,6 +8,7 @@ import com.appcent.android.firebasedemo.domain.util.extensions.showToast
 import com.appcent.android.firebasedemo.ui.base.BaseFragment
 import com.appcent.android.firebasedemo.ui.view.auth.state.AuthenticationViewState
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 
 
 @AndroidEntryPoint
@@ -37,12 +38,15 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
     }
 
     private fun handleViewState(viewState: AuthenticationViewState) {
+        hideProgress()
         when (viewState) {
 
-            AuthenticationViewState.Loading -> {}
+            AuthenticationViewState.Loading -> {
+                showProgress()
+            }
 
             is AuthenticationViewState.Success -> {
-                showToast("Success Login")
+                nav(LoginFragmentDirections.actionLoginToConversations())
             }
 
             is AuthenticationViewState.Error -> {

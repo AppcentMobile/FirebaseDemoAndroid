@@ -15,6 +15,7 @@ import com.appcent.android.firebasedemo.domain.Constants
 import com.appcent.android.firebasedemo.domain.util.KeyboardVisibilityListener
 import com.appcent.android.firebasedemo.domain.util.NavigationAnimation
 import com.appcent.android.firebasedemo.domain.util.NavigationUtils
+import com.appcent.android.firebasedemo.domain.util.extensions.showToast
 import com.appcent.android.firebasedemo.ui.view.MainActivity
 import kotlinx.coroutines.delay
 import timber.log.Timber
@@ -126,12 +127,12 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment() {
     }
 
     fun showErrorDialog(error: String?) {
-
+        showToast(error?:"")
     }
 
-    open fun showProgress(isCancelable: Boolean = false) {
+    open fun showProgress() {
         isProgressShowing = true
-        mainActivity?.showProgress(isCancelable)
+        mainActivity?.showProgress()
     }
 
     open fun hideProgress() {
