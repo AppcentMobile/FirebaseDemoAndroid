@@ -33,15 +33,19 @@ class ConversationsAdapter(
         holder.bind(conversation = conversations[position])
     }
 
-
     inner class ConversationViewHolder(private val binding: ItemConversationBinding) :
         RecyclerView.ViewHolder(binding.root) {
+        private var conversationBrief: ConversationBrief? = null
+
+        init {
+            itemView.setOnClickListener {
+                conversationBrief?.id?.let(onSelectConversation)
+            }
+        }
 
         fun bind(conversation: ConversationBrief) {
             with(binding) {
-                itemView.setOnClickListener {
-                   onSelectConversation.invoke(conversation.id)
-                }
+                conversationBrief = conversation
                 tvLastMessage.text = conversation.lastMessage
                 tvUserName.text = conversation.userName
 

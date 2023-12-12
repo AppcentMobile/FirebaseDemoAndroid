@@ -35,11 +35,17 @@ class UsersAdapter(val onUserSelect: (String) -> Unit) :
     inner class UserViewHolder(private val binding: ItemUserBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
+        private var user: User? = null
+
+        init {
+            itemView.setOnClickListener {
+                user?.userId?.let(onUserSelect)
+            }
+        }
+
         fun bind(user: User) {
+            this.user = user
             with(binding) {
-                itemView.setOnClickListener {
-                    onUserSelect.invoke(user.userId)
-                }
                 textViewUserName.text = "${user.name}(${user.email})"
             }
         }
