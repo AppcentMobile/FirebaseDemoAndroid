@@ -33,12 +33,15 @@ class RegisterFragment : BaseFragment<FragmentRegisterBinding>() {
     }
 
     private fun handleViewState(viewState: AuthenticationViewState) {
+        hideProgress()
         when (viewState) {
 
-            AuthenticationViewState.Loading -> {}
+            AuthenticationViewState.Loading -> {
+                showProgress()
+            }
 
             is AuthenticationViewState.Success -> {
-                showToast("Success Register")
+                nav(RegisterFragmentDirections.actionRegisterToConversations())
             }
 
             is AuthenticationViewState.Error -> {
