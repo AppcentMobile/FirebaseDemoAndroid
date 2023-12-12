@@ -77,7 +77,7 @@ class FirebaseDBHelper(
                         // Create ConversationBrief and add to the list
                         val conversationBrief = ConversationBrief(
                             id = chatId,
-                            lastMessage = lastMessage?.text ?: "",
+                            lastMessage = lastMessage?.text.orEmpty(),
                             lastMessageTimestamp = lastMessage?.timestamp ?: 0,
                             userName = userName
                         )
