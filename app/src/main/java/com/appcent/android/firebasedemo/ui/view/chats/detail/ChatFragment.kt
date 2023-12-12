@@ -26,7 +26,7 @@ class ChatFragment : BaseFragment<FragmentChatBinding>() {
         viewModel.setConversationId(navArgs.conversationId)
     }
     override fun initUi() {
-        chatAdapter = ChatAdapter(FirebaseAuth.getInstance().currentUser?.uid ?: "")
+        chatAdapter = ChatAdapter(viewModel.getCurrentUserId())
         binding.rvChats.adapter = chatAdapter
     }
     override fun delayedInitUi() {

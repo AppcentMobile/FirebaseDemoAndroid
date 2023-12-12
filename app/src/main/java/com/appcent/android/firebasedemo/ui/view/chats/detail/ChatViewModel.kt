@@ -29,7 +29,7 @@ class ChatViewModel @Inject constructor(
         val message = Message(
             System.currentTimeMillis(),
             messageContent,
-            senderId = authRepository.currentUser?.uid ?: ""
+            senderId = getCurrentUserId()
         )
         firebaseDBHelper.addMessageToConversation(conversationId, message)
     }
@@ -40,6 +40,10 @@ class ChatViewModel @Inject constructor(
 
     fun setConversationId(conversationId: String) {
         this.conversationId = conversationId
+    }
+
+    fun getCurrentUserId():String {
+        return authRepository.currentUser?.uid.orEmpty()
     }
 
     fun loadConversation() {
