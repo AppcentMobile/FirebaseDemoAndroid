@@ -24,6 +24,16 @@ class FirebaseDBHelper(
     private val firebaseAuth: FirebaseAuth
 ) {
 
+    companion object {
+        private const val USERS_NODE = "users"
+        private const val USERS_NAME = "name"
+        private const val USERS_EMAIL = "email"
+        private const val CONVERSATIONS_NODE = "conversations"
+        private const val CONVERSATIONS_MESSAGES = "messages"
+        private const val CONVERSATION_PARTICIPANTS_NODE = "participants"
+        private const val USERS_CHATS_NODE = "chats"
+        private const val MESSAGE_TIME_STAMP = "timestamp"
+    }
 
     private val currentUserId: String = firebaseAuth.currentUser?.uid ?: ""
 
@@ -48,20 +58,20 @@ class FirebaseDBHelper(
                 val conversations = mutableListOf<ConversationBrief>()
 
                 // Iterate through user's chats
-                snapshot.child("users").child(currentUserId)
-                    .child("chats").children.forEach { chatSnapshot ->
+                snapshot.child(USERS_NODE).child(currentUserId)
+                    .child(USERS_CHATS_NODE).children.forEach { chatSnapshot ->
                         var userName = ""
                         val chatId = chatSnapshot.value.toString()
 
                         // Get conversation details
-                        val conversationSnapshot = snapshot.child("conversations").child(chatId)
+                        val conversationSnapshot = snapshot.child(CONVERSATIONS_NODE).child(chatId)
                         val lastMessage = getLastMessage(conversationSnapshot)
                         val participants =
-                            conversationSnapshot.child("participants").children.map { it.value.toString() }
+                            conversationSnapshot.child(CONVERSATION_PARTICIPANTS_NODE).children.map { it.value.toString() }
                         val otherParticipantId = participants.find { it != currentUserId }
                         otherParticipantId?.let {
-                            val user = snapshot.child("users").child(it)
-                            userName = "${user.child("name").value}(${user.child("email").value})"
+                            val user = snapshot.child(USERS_NODE).child(it)
+                            userName = "${user.child(USERS_NAME).value}(${user.child(USERS_EMAIL).value})"
                         }
                         // Create ConversationBrief and add to the list
                         val conversationBrief = ConversationBrief(
@@ -92,7 +102,7 @@ class FirebaseDBHelper(
 
     suspend fun getConversation(conversationId: String): Conversation? =
         suspendCoroutine { continuation ->
-            readData("conversations/$conversationId", object : ValueEventListener {
+            readData("$CONVERSATIONS_NODE/$conversationId", object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val conversation = snapshot.getValue(Conversation::class.java)
                     continuation.resume(conversation)
@@ -122,7 +132,7 @@ class FirebaseDBHelper(
         }
 
         // Attach the ValueEventListener to the database reference
-        val conversationRef = databaseReference.child("conversations").child(conversationId)
+        val conversationRef = databaseReference.child(CONVERSATIONS_NODE).child(conversationId)
         conversationRef.addValueEventListener(valueEventListener)
 
         // Add a cleanup mechanism when the LiveData is cleared
@@ -139,17 +149,17 @@ class FirebaseDBHelper(
 
     suspend fun getUsersListForMessaging(query: String? = null): List<User> =
         suspendCoroutine { continuation ->
-            readData("users", object : ValueEventListener {
+            readData(USERS_NODE, object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     val usersList = mutableListOf<User>()
 
                     for (userSnapshot in dataSnapshot.children) {
                         val userId = userSnapshot.key ?: ""
                         val email =
-                            userSnapshot.child("email").getValue(String::class.java) ?: ""
+                            userSnapshot.child(USERS_EMAIL).getValue(String::class.java) ?: ""
 
                         val name =
-                            userSnapshot.child("name").getValue(String::class.java) ?: ""
+                            userSnapshot.child(USERS_NAME).getValue(String::class.java) ?: ""
 
                         // Exclude the current user from the list
                         if (userId != currentUserId) {
@@ -176,7 +186,7 @@ class FirebaseDBHelper(
 
     fun addUserToUserNode(userId: String, userData: User) {
 
-        writeData("users/$userId", userData, completionListener = object : ValueEventListener,
+        writeData("$USERS_NODE/$userId", userData, completionListener = object : ValueEventListener,
             DatabaseReference.CompletionListener {
             override fun onDataChange(snapshot: DataSnapshot) {
 
@@ -195,7 +205,7 @@ class FirebaseDBHelper(
 
     suspend fun getConversationId(userId: String): String =
         suspendCoroutine { continuation ->
-            readData("users/$currentUserId/chats/$userId", object : ValueEventListener {
+            readData("$USERS_NODE/$currentUserId/$USERS_CHATS_NODE/$userId", object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     if (dataSnapshot.value == null) {
                         createConversation(currentUserId, userId, continuation)
@@ -218,14 +228,14 @@ class FirebaseDBHelper(
     ) {
         val conversationId = databaseReference.push().key.toString()
         writeData(
-            "users/$user1Id/chats/$user2Id", conversationId
+            "$USERS_NODE/$user1Id/$USERS_CHATS_NODE/$user2Id", conversationId
         ) { error, _ ->
             error?.let {
                 continuation.resumeWithException(it.toException())
             }
         }
         writeData(
-            "users/$user2Id/chats/$user1Id", conversationId
+            "$USERS_NODE/$user2Id/$USERS_CHATS_NODE/$user1Id", conversationId
         ) { error, _ ->
             error?.let {
                 continuation.resumeWithException(it.toException())
@@ -234,7 +244,7 @@ class FirebaseDBHelper(
 
         val conversation = Conversation(null, listOf(user1Id, user2Id))
         writeData(
-            "conversations/$conversationId", conversation
+            "$CONVERSATIONS_NODE/$conversationId", conversation
         ) { error, _ ->
             error?.let {
                 continuation.resumeWithException(it.toException())
@@ -245,7 +255,7 @@ class FirebaseDBHelper(
 
     fun addMessageToConversation(conversationId: String, message: Message) {
         val messagesRef =
-            databaseReference.child("conversations").child(conversationId).child("messages")
+            databaseReference.child(CONVERSATIONS_NODE).child(conversationId).child(CONVERSATIONS_MESSAGES)
 
         // Generate a unique key for the new message
         val messageId = messagesRef.push().key ?: ""
@@ -257,9 +267,9 @@ class FirebaseDBHelper(
 
 
     private fun getLastMessage(conversationSnapshot: DataSnapshot): Message? {
-        val messagesSnapshot = conversationSnapshot.child("messages")
+        val messagesSnapshot = conversationSnapshot.child(CONVERSATIONS_MESSAGES)
         val latestMessageSnapshot = messagesSnapshot.children.maxByOrNull {
-            it.child("timestamp").getValue(Long::class.java) ?: 0
+            it.child(MESSAGE_TIME_STAMP).getValue(Long::class.java) ?: 0
         }
 
         return latestMessageSnapshot?.getValue(Message::class.java)
