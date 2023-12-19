@@ -9,9 +9,13 @@ The FirebaseChat project is a chat application that utilizes Firebase Authentica
 - Firebase Authentication: Manages user authentication.
 - Firebase Realtime Database: Stores and retrieves messages and user data.
 - Firebase Crashlytics: For catching any unwanted crashes and issues
-- Jitpack Navigation : As our main tool for navigating between screens 
+- Jetpack Navigation : As our main tool for navigating between screens 
 - Hilt: For dependency Injection
 
+
+## Usage
+Create your firebase project and add google-services.json to this project 
+then add database rules to your firebase realtime database rules
 
 ## Firebase Realtime Database Rules
 
@@ -52,3 +56,5 @@ The FirebaseChat project is a chat application that utilizes Firebase Authentica
     }
   }
 }
+
+
